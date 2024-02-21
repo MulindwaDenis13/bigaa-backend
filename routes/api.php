@@ -30,7 +30,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function () {
     Route::controller(GeneralDashboradController::class)->group(function () {
-        Route::get('card-counters', 'card_counters');
+        Route::post('card-counters', 'card_counters');
         Route::get('user-gender', 'user_gender');
         Route::get('user-age-groups', 'user_age_groups');
     });
