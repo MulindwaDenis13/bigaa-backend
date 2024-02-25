@@ -23,7 +23,7 @@ class GeneralDashboradController extends Controller
 
                 'comments' => $this->generate_query_counts(DB::table('post_comments'), $request, 'date_time'),
 
-                'tags' => $this->generate_query_counts(DB::table('post_saved'), $request, 'date_time')
+                'tags' => 0
 
             ];
             return response()->json(['status' => true, 'data' => $card_counters,]);
@@ -76,64 +76,7 @@ class GeneralDashboradController extends Controller
     {
         try {
 
-            $all_users = DB::table('users')
-                ->select('users.*')
-                ->addSelect(DB::raw('TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age'))
-                ->when($request->period == YESTERDAY, function ($q) {
-                    $q->whereDate('created_at', Carbon::yesterday());
-                })
-                ->when($request->period == LAST_WEEK, function ($q) {
-                    $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_7_DAYS_NUM));
-                })
-                ->when($request->period == LAST_MONTH, function ($q) {
-                    $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_30_DAYS_NUM));
-                })
-                ->when($request->period == LAST_90_DAYS, function ($q) {
-                    $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_90_DAYS_NUM));
-                })
-                ->when($request->period == LAST_180_DAYS, function ($q) {
-                    $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_180_DAYS_NUM));
-                })
-                ->get()
-                ->toArray();
-
-            $age_groups = [
-                '13-17' => count(
-                    array_filter(
-                        $all_users,
-                        fn($user) =>
-                        (13 <= $user->age) && ($user->age <= 17)
-                    )
-                ),
-                '18-29' => count(
-                    array_filter(
-                        $all_users,
-                        fn($user) =>
-                        (18 <= $user->age) && ($user->age <= 29)
-                    )
-                ),
-                '30-42' => count(
-                    array_filter(
-                        $all_users,
-                        fn($user) =>
-                        (30 <= $user->age) && ($user->age <= 42)
-                    )
-                ),
-                '43-52' => count(
-                    array_filter(
-                        $all_users,
-                        fn($user) =>
-                        (43 <= $user->age) && ($user->age <= 52)
-                    )
-                ),
-                '>52' => count(
-                    array_filter(
-                        $all_users,
-                        fn($user) =>
-                        $user->age > 52
-                    )
-                ),
-            ];
+            $age_groups = $this->filter_age_groups($request);
 
             return response()->json(['status' => true, 'data' => $age_groups]);
 
@@ -143,6 +86,92 @@ class GeneralDashboradController extends Controller
     }
 
 
+    public function viewers_age_groups(Request $request)
+    {
+        try {
 
+
+            $posts_saved = DB::table('post_saved')->get()->pluck('user_id')->toArray();
+
+            $posts_liked = DB::table('post_likes')->get()->pluck('user_id')->toArray();
+
+            $posts_commented = DB::table('post_comments')->get()->pluck('user_id')->toArray();
+
+            $results = array_unique(array_merge($posts_commented, $posts_liked, $posts_saved));
+
+            $viewers_age_groups = $this->filter_age_groups($request, $results);
+
+            return response()->json(['status' => true, 'data' => $viewers_age_groups]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    private function filter_age_groups($request, array $users = [])
+    {
+        $all_users = DB::table('users')
+            ->select('users.*')
+            ->addSelect(DB::raw('TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age'))
+            ->when(count($users) > 0, function ($q) use ($users) {
+                $q->whereIn('id', $users);
+            })
+            ->when($request->period == YESTERDAY, function ($q) {
+                $q->whereDate('created_at', Carbon::yesterday());
+            })
+            ->when($request->period == LAST_WEEK, function ($q) {
+                $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_7_DAYS_NUM));
+            })
+            ->when($request->period == LAST_MONTH, function ($q) {
+                $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_30_DAYS_NUM));
+            })
+            ->when($request->period == LAST_90_DAYS, function ($q) {
+                $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_90_DAYS_NUM));
+            })
+            ->when($request->period == LAST_180_DAYS, function ($q) {
+                $q->whereDate('created_at', '>', Carbon::now()->subDays(LAST_180_DAYS_NUM));
+            })
+            ->get()
+            ->toArray();
+
+        $age_groups = [
+            '13-17' => count(
+                array_filter(
+                    $all_users,
+                    fn($user) =>
+                    (13 <= $user->age) && ($user->age <= 17)
+                )
+            ),
+            '18-29' => count(
+                array_filter(
+                    $all_users,
+                    fn($user) =>
+                    (18 <= $user->age) && ($user->age <= 29)
+                )
+            ),
+            '30-42' => count(
+                array_filter(
+                    $all_users,
+                    fn($user) =>
+                    (30 <= $user->age) && ($user->age <= 42)
+                )
+            ),
+            '43-52' => count(
+                array_filter(
+                    $all_users,
+                    fn($user) =>
+                    (43 <= $user->age) && ($user->age <= 52)
+                )
+            ),
+            '>52' => count(
+                array_filter(
+                    $all_users,
+                    fn($user) =>
+                    $user->age > 52
+                )
+            ),
+        ];
+
+        return $age_groups;
+    }
 
 }
