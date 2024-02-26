@@ -36,6 +36,7 @@ class GeneralDashboradController extends Controller
     public function user_gender(Request $request)
     {
         try {
+
             $gender = [
 
                 'male' => $this->generate_query_counts(DB::table('users')->where('gender', 'Male'), $request, 'created_at'),
@@ -172,6 +173,26 @@ class GeneralDashboradController extends Controller
         ];
 
         return $age_groups;
+    }
+
+    public function user_registered_from(Request $request)
+    {
+        try {
+            
+            $user_registered_from = [
+
+                'google' => $this->generate_query_counts(DB::table('users')->where('registered_from','google'), $request, 'created_at'),
+
+                'site' => $this->generate_query_counts(DB::table('users')->where('registered_from','site'), $request, 'created_at'),
+
+                'facebook' => $this->generate_query_counts(DB::table('users')->where('registered_from','facebook'), $request, 'created_at')
+                
+            ];
+
+            return response()->json(['status' => true, 'data' => $user_registered_from]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
 
 }
