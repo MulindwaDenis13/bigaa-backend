@@ -35,5 +35,6 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('user-registered-from', 'user_registered_from');
         Route::post('user-age-groups', 'user_age_groups');
         Route::post('viewers-age-groups', 'viewers_age_groups');
+        Route::get('latest-posts', 'latest_posts');
     });
 });

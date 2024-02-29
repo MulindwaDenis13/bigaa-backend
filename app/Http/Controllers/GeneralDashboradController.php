@@ -178,18 +178,52 @@ class GeneralDashboradController extends Controller
     public function user_registered_from(Request $request)
     {
         try {
-            
+
             $user_registered_from = [
 
-                'google' => $this->generate_query_counts(DB::table('users')->where('registered_from','google'), $request, 'created_at'),
+                'google' => $this->generate_query_counts(DB::table('users')->where('registered_from', 'google'), $request, 'created_at'),
 
-                'site' => $this->generate_query_counts(DB::table('users')->where('registered_from','site'), $request, 'created_at'),
+                'site' => $this->generate_query_counts(DB::table('users')->where('registered_from', 'site'), $request, 'created_at'),
 
-                'facebook' => $this->generate_query_counts(DB::table('users')->where('registered_from','facebook'), $request, 'created_at')
-                
+                'facebook' => $this->generate_query_counts(DB::table('users')->where('registered_from', 'facebook'), $request, 'created_at')
+
             ];
 
             return response()->json(['status' => true, 'data' => $user_registered_from]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function latest_posts()
+    {
+        try {
+            $latest_posts = DB::table('hp_posts')
+                ->select(['id', 'title', 'number_of_likes', 'number_of_comments', 'type', 'unique_id'])
+                ->orderBy('id','desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($post) {
+                    $views = DB::table('post_saved')
+                        ->where('post_unique_id', $post->unique_id)
+                        ->count() + $post->number_of_likes + $post->number_of_comments;
+                    $image = null;
+                    if ($post->type == 'book')
+                        $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
+                    if ($post->type == 'image')
+                        $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
+                    if ($post->type == 'video')
+                        $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->picture_path;
+                    return [
+                        'id' => $post->id,
+                        'title' => $post->title,
+                        'likes' => $post->number_of_likes,
+                        'comments' => $post->number_of_comments,
+                        'views' => $views,
+                        'image' => $image
+                    ];
+                });
+            return response()->json(['status' => true, 'data' => $latest_posts]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
