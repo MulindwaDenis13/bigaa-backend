@@ -37,5 +37,6 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('viewers-age-groups', 'viewers_age_groups');
     });
 });
-
-Route::post('/users', [UserController::class, 'index']);
+Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
+Route::post('/userlist', [UserController::class, 'index']);
+});
