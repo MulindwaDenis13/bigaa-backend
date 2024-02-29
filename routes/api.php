@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GeneralDashboradController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,5 +36,15 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('user-registered-from', 'user_registered_from');
         Route::post('user-age-groups', 'user_age_groups');
         Route::post('viewers-age-groups', 'viewers_age_groups');
+        Route::post('latest-posts', 'latest_posts');
+    });
+});
+
+Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
+
+    Route::controller(UserController::class)->group(function () {
+
+        Route::post('userlist', 'index');
+
     });
 });
