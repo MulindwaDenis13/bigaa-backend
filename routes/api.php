@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GeneralDashboradController;
-
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,3 +37,5 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('viewers-age-groups', 'viewers_age_groups');
     });
 });
+
+Route::post('/users', [UserController::class, 'index']);
