@@ -40,7 +40,7 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
     });
 });
 
-Route::group(['prefix' => 'user', 'middleware' => []], function () {
+Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
 
     Route::controller(UserController::class)->group(function () {
 
