@@ -23,9 +23,12 @@ class GeneralDashboradController extends Controller
 
                 'comments' => $this->generate_query_counts(DB::table('post_comments'), $request, 'date_time'),
 
+                'admins' => DB::table('admins')->count(),
+
                 'tags' => 0
 
             ];
+            
             return response()->json(['status' => true, 'data' => $card_counters,]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
@@ -200,7 +203,7 @@ class GeneralDashboradController extends Controller
         try {
             $latest_posts = DB::table('hp_posts')
                 ->select(['id', 'title', 'number_of_likes', 'number_of_comments', 'type', 'unique_id'])
-                ->orderBy('id','desc')
+                ->orderBy('id', 'desc')
                 ->limit(5)
                 ->get()
                 ->map(function ($post) {
