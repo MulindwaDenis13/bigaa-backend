@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
 
             $users = DB::table('users')
+                ->when($request->keyword, function ($query) use ($request) {
+                    $pattern = '%' . $request->keyword . '%';
+                    $query->where('username', 'like', $pattern)
+                        ->orWhere('first_name', 'like', $pattern)
+                        ->orWhere('last_name', 'like', $pattern)
+                        ->orWhere('email', 'like', $pattern);
+                })
                 ->orderBy('id', 'desc')
                 ->paginate(10)
                 ->through(function ($user) {
