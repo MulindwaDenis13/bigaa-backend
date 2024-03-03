@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GeneralDashboradController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,16 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::controller(UserController::class)->group(function () {
 
         Route::post('userlist', 'index');
+
+    });
+});
+
+
+Route::group(['prefix' => 'author', 'middleware' => ['auth:sanctum']], function () {
+
+    Route::controller(AuthorController::class)->group(function () {
+
+        Route::post('authorlist', 'index');
 
     });
 });
