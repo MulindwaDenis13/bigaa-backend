@@ -51,7 +51,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
 });
 
 
-Route::group(['prefix' => 'author', 'middleware' => []], function () {
+Route::group(['prefix' => 'author', 'middleware' => ['auth:sanctum']], function () {
 
     Route::controller(AuthorController::class)->group(function () {
 
