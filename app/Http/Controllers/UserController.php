@@ -18,7 +18,12 @@ class UserController extends Controller
                     $query->where('username', 'like', $pattern)
                         ->orWhere('first_name', 'like', $pattern)
                         ->orWhere('last_name', 'like', $pattern)
-                        ->orWhere('email', 'like', $pattern);
+                        ->orWhere('email', 'like', $pattern)
+                        ->orWhere('country', 'like', $pattern)
+                        ->orWhere('phone', 'like', $pattern)
+                        ->orWhere('nationality', 'like', $pattern)
+                        ->orWhere('state', 'like', $pattern)
+                        ->orWhere('city', 'like', $pattern);
                 })
                 ->orderBy('id', 'desc')
                 ->paginate(10)
