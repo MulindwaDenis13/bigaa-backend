@@ -21,9 +21,9 @@ class PostController extends Controller
                 ->paginate(10)
                 ->through(function ($post) {
                     $image = null;
-                    if ($post->type == 'book')
+                    if ($post->type == 'books')
                         $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
-                    if ($post->type == 'image')
+                    if ($post->type == 'images')
                         $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'video')
                         $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->picture_path;
