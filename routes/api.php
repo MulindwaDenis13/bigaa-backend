@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GeneralDashboradController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,16 @@ Route::group(['prefix' => 'author', 'middleware' => ['auth:sanctum']], function 
     Route::controller(AuthorController::class)->group(function () {
 
         Route::post('authorlist', 'index');
+
+    });
+});
+
+
+Route::group(['prefix' => 'posts', 'middleware' => ['auth:sanctum']], function () {
+
+    Route::controller(PostController::class)->group(function () {
+
+        Route::post('list', 'index');
 
     });
 });
