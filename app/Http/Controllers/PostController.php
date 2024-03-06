@@ -21,6 +21,9 @@ class PostController extends Controller
                 ->orderBy('id', 'desc')
                 ->paginate($pagination_limit)
                 ->through(function ($post) {
+                    $views = DB::table('post_saved')
+                        ->where('post_unique_id', $post->unique_id)
+                        ->count() + $post->number_of_likes + $post->number_of_comments;
                     $image = null;
                     if ($post->type == 'books')
                         $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
@@ -47,6 +50,7 @@ class PostController extends Controller
                         'filter_faith' => $post->filter_faith,
                         'category' => $post->category,
                         'created_at' => $post->created_at,
+                        'views' => $views,
                         'user' => DB::table('users')
                             ->select(['id', 'username', 'first_name', 'last_name', 'email'])
                             ->first()
