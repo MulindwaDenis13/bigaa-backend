@@ -11,6 +11,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         try {
+            $pagination_limit = (int) $request->paginationLimit ?? 10;
             $posts = DB::table('hp_posts')
                 ->when($request->keyword, function ($query) use ($request) {
                     $pattern = '%' . $request->keyword . '%';
@@ -18,7 +19,7 @@ class PostController extends Controller
                         ->orWhere('description', 'like', $pattern);
                 })
                 ->orderBy('id', 'desc')
-                ->paginate(10)
+                ->paginate($pagination_limit)
                 ->through(function ($post) {
                     $image = null;
                     if ($post->type == 'books')

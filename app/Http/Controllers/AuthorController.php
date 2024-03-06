@@ -10,6 +10,7 @@ class AuthorController extends Controller
     public function index(Request $request)
     {
         try {
+            $pagination_limit = (int) $request->paginationLimit ?? 10;
             $authors = DB::table('authors')
                 ->when($request->keyword, function ($query) use ($request) {
                     $pattern = '%' . $request->keyword . '%';
@@ -19,7 +20,7 @@ class AuthorController extends Controller
                 })
                 ->orderBy('id', 'desc')
                 ->latest()
-                ->paginate(10)
+                ->paginate($pagination_limit)
                 ->through(function ($author) {
                     return [
                         'id' => $author->id,

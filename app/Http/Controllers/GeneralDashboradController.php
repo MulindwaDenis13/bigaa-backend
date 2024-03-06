@@ -25,10 +25,10 @@ class GeneralDashboradController extends Controller
 
                 'admins' => DB::table('admins')->count(),
 
-                'tags' => 0
+                'tags' => $this->generate_query_counts(DB::table('beneficiaries'), $request, 'added_on')
 
             ];
-            
+
             return response()->json(['status' => true, 'data' => $card_counters,]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
