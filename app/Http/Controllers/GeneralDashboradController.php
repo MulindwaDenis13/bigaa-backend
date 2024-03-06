@@ -25,10 +25,10 @@ class GeneralDashboradController extends Controller
 
                 'admins' => DB::table('admins')->count(),
 
-                'tags' => 0
+                'tags' => $this->generate_query_counts(DB::table('beneficiaries'), $request, 'added_on')
 
             ];
-            
+
             return response()->json(['status' => true, 'data' => $card_counters,]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
@@ -211,9 +211,9 @@ class GeneralDashboradController extends Controller
                         ->where('post_unique_id', $post->unique_id)
                         ->count() + $post->number_of_likes + $post->number_of_comments;
                     $image = null;
-                    if ($post->type == 'book')
+                    if ($post->type == 'books')
                         $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
-                    if ($post->type == 'image')
+                    if ($post->type == 'images')
                         $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'video')
                         $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->picture_path;

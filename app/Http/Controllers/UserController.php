@@ -12,6 +12,8 @@ class UserController extends Controller
     {
         try {
 
+            $pagination_limit = (int) $request->paginationLimit ?? 10;
+
             $users = DB::table('users')
                 ->when($request->keyword, function ($query) use ($request) {
                     $pattern = '%' . $request->keyword . '%';
@@ -26,7 +28,7 @@ class UserController extends Controller
                         ->orWhere('city', 'like', $pattern);
                 })
                 ->orderBy('id', 'desc')
-                ->paginate(10)
+                ->paginate($pagination_limit)
                 ->through(function ($user) {
                     return [
                         'id' => $user->id,
