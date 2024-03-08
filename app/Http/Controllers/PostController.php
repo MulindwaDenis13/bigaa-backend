@@ -26,11 +26,11 @@ class PostController extends Controller
                         ->count() + $post->number_of_likes + $post->number_of_comments;
                     $image = null;
                     if ($post->type == 'books')
-                        $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
+                        $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->book_path;
                     if ($post->type == 'images')
                         $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'video')
-                        $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->picture_path;
+                        $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->video_url;
                      $author = DB::table('authors')->where('id', $post->author_id)
                      ->select(['id', 'author_name', 'picture_path'])
                      ->first();
