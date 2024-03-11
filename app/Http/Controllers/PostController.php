@@ -26,7 +26,7 @@ class PostController extends Controller
                         ->count() + $post->number_of_likes + $post->number_of_comments;
                     $image = null;
                     if ($post->type == 'books')
-                        $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->book_path;
+                        $image = DB::table('hp_posts_books')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'images')
                         $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'video')
