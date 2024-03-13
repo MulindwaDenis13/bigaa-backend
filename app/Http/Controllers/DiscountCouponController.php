@@ -9,10 +9,12 @@ use App\Models\DiscountCoupon;
 
 class DiscountCouponController extends Controller
 {
-    public function index()
-    {
-        $coupons = DiscountCoupon::all();
-        return response()->json($coupons);
+    public function index(Request $request)
+    {            $pagination_limit = (int) $request->paginationLimit ?? 10;
+        $coupons = DiscountCoupon::orderBy('id', 'desc')
+        ->paginate($pagination_limit);
+       
+        return response()->json(['status' => true, 'data' => $coupons]);
     }
 
     public function store(Request $request)
