@@ -30,8 +30,12 @@ class PostController extends Controller
                     if ($post->type == 'images')
                         $image = DB::table('hp_posts_images')->where('post_id', $post->id)->first()?->picture_path;
                     if ($post->type == 'video')
-                        $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->picture_path;
-                    return [
+                        $image = DB::table('hp_posts_videos')->where('post_id', $post->id)->first()?->video_url;
+                     $author = DB::table('authors')->where('id', $post->author_id)
+                     ->select(['id', 'author_name', 'picture_path'])
+                     ->first();
+
+                        return [
                         'id' => $post->id,
                         'title' => $post->title,
                         'added_by' => $post->added_by,
@@ -51,6 +55,7 @@ class PostController extends Controller
                         'category' => $post->category,
                         'created_at' => $post->created_at,
                         'views' => $views,
+                        'author' => $author,
                         'user' => DB::table('users')
                             ->select(['id', 'username', 'first_name', 'last_name', 'email'])
                             ->first()

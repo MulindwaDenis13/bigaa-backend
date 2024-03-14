@@ -7,6 +7,7 @@ use App\Http\Controllers\GeneralDashboradController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\DiscountCouponController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,7 @@ use App\Http\Controllers\PostController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+// auth
 Route::group(['prefix' => 'auth'], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('login', 'login');
@@ -30,7 +31,7 @@ Route::group(['prefix' => 'auth'], function () {
         Route::post('logout', 'logout')->middleware('auth:sanctum');
     });
 });
-
+//dashboard statistics
 Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function () {
     Route::controller(GeneralDashboradController::class)->group(function () {
         Route::post('card-counters', 'card_counters');
@@ -41,7 +42,7 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('latest-posts', 'latest_posts');
     });
 });
-
+// users
 Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
 
     Route::controller(UserController::class)->group(function () {
@@ -51,7 +52,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     });
 });
 
-
+// authors
 Route::group(['prefix' => 'author', 'middleware' => ['auth:sanctum']], function () {
 
     Route::controller(AuthorController::class)->group(function () {
@@ -61,7 +62,7 @@ Route::group(['prefix' => 'author', 'middleware' => ['auth:sanctum']], function 
     });
 });
 
-
+// posts
 Route::group(['prefix' => 'posts', 'middleware' => ['auth:sanctum']], function () {
 
     Route::controller(PostController::class)->group(function () {
@@ -70,3 +71,9 @@ Route::group(['prefix' => 'posts', 'middleware' => ['auth:sanctum']], function (
 
     });
 });
+// discount coupons
+Route::controller(DiscountCouponController::class)->group(function () {
+Route::get('/discount-coupons', 'index');
+Route::post('/post-discount-coupons', 'store');
+});
+
