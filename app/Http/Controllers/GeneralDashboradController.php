@@ -201,6 +201,7 @@ class GeneralDashboradController extends Controller
     public function latest_posts()
     {
         try {
+
             $latest_posts = DB::table('hp_posts')
                 ->select(['id', 'title', 'number_of_likes', 'number_of_comments', 'type', 'unique_id'])
                 ->orderBy('id', 'desc')
@@ -226,7 +227,28 @@ class GeneralDashboradController extends Controller
                         'image' => $image
                     ];
                 });
+
             return response()->json(['status' => true, 'data' => $latest_posts]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function revenue_graph(Request $request)
+    {
+        try {
+            $categories = DB::table('hp_posts_categories')
+                ->groupBy('hp_posts_categories.category_name')
+                ->get();
+            $amounts = [];
+            foreach ($categories as $category) {
+                $posts = DB::table('hp_posts')
+                    ->where('category', $category->category_name)
+                    ->whereNotNull(['buys', 'price'])
+                    ->where('buys', '!=', 0)
+                    ->select(['buys', 'price'])
+                    ->get();
+            }
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
