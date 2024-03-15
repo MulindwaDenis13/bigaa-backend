@@ -40,6 +40,7 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function
         Route::post('user-age-groups', 'user_age_groups');
         Route::post('viewers-age-groups', 'viewers_age_groups');
         Route::post('latest-posts', 'latest_posts');
+        Route::post('revenue-graph', 'revenue_graph');
     });
 });
 // users
@@ -73,7 +74,7 @@ Route::group(['prefix' => 'posts', 'middleware' => ['auth:sanctum']], function (
 });
 // discount coupons
 Route::controller(DiscountCouponController::class)->group(function () {
-Route::get('/discount-coupons', 'index');
-Route::post('/post-discount-coupons', 'store');
+    Route::get('/discount-coupons', 'index');
+    Route::post('/post-discount-coupons', 'store');
 });
 

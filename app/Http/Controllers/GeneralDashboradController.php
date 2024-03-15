@@ -237,21 +237,56 @@ class GeneralDashboradController extends Controller
     public function revenue_graph(Request $request)
     {
         try {
-            $categories = DB::table('hp_posts_categories')
-                ->groupBy('hp_posts_categories.category_name')
-                ->get();
-            $amounts = [];
-            foreach ($categories as $category) {
-                $posts = DB::table('hp_posts')
-                    ->where('category', $category->category_name)
-                    ->whereNotNull(['buys', 'price'])
-                    ->where('buys', '!=', 0)
-                    ->select(['buys', 'price'])
-                    ->get();
-            }
+
+            $revenues = $this->category_revenue($request);
+
+            return response()->json(['status' => true, 'data' => $revenues]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+    private function category_revenue($request)
+    {
+        // Fetch all posts with non-null buys and price
+        $posts = DB::table('hp_posts')
+            ->whereNotNull('buys')
+            ->whereNotNull('price')
+            ->where('buys', '!=', 0)
+            ->select(['category', 'buys', 'price', 'filter_race'])
+            ->get();
+
+        // Group posts by any filter for efficient processing
+
+        $groupedPosts = collect([]);
+
+        if ($request->has('category')) {
+            $groupedPosts = $posts->groupBy('category');
+        }
+
+        if ($request->has('region')) {
+            $groupedPosts = $posts->groupBy('filter_race');
+        }
+
+        $revenues = [];
+
+        // Iterate through grouped posts
+        $groupedPosts->each(function ($posts, $category) use (&$revenues) {
+            $postAmount = $posts->sum(function ($post) {
+                // Remove $ sign and calculate amount
+                return $post->buys * substr($post->price, 1);
+
+            });
+
+            $revenues[] = [
+                'label' => $category,
+                'amount' => '$' . number_format($postAmount, 2) // Format amount
+            ];
+
+        });
+
+
+        return $revenues;
     }
 
 }
