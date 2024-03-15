@@ -32,7 +32,7 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 //dashboard statistics
-Route::group(['prefix' => 'general', 'middleware' => []], function () {
+Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum']], function () {
     Route::controller(GeneralDashboradController::class)->group(function () {
         Route::post('card-counters', 'card_counters');
         Route::post('user-gender', 'user_gender');
