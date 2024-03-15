@@ -271,7 +271,7 @@ class GeneralDashboradController extends Controller
         $revenues = [];
 
         // Iterate through grouped posts
-        $groupedPosts->each(function ($posts, $category) use (&$revenues) {
+        $groupedPosts->each(function ($posts, $label) use (&$revenues) {
             $postAmount = $posts->sum(function ($post) {
                 // Remove $ sign and calculate amount
                 return $post->buys * substr($post->price, 1);
@@ -279,7 +279,7 @@ class GeneralDashboradController extends Controller
             });
 
             $revenues[] = [
-                'label' => $category,
+                'label' => $label,
                 'amount' => '$' . number_format($postAmount, 2) // Format amount
             ];
 
